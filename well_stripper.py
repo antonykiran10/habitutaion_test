@@ -63,7 +63,7 @@ def divide_into_squares(image_path, output_folder, x_start, y_start, x_end, y_en
             square = img.crop((x1, y1, x2, y2))
 
             # Save the square as a new image
-            output_filename = f"square_{count}.png"
+            output_filename = f"square_{count}.bmp"
             output_path = f"{output_folder}/{row}_{col}/{output_filename}"
             square.save(output_path)
 

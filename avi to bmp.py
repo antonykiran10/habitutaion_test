@@ -6,7 +6,7 @@ path ='/home/antony/projects/roopsali/Habituation/120fps well/'
 file_name = '0_1_output_video.avi'
 
 os.chdir(path)
-os.mkdir('output_0_1')
+os.makedirs('/home/antony/projects/roopsali/Habituation/120fps well/output_0_1', exist_ok=True)
 
 ff = FFmpeg(
             inputs = {str(file_name): None},

@@ -7,11 +7,12 @@ from PIL import Image
 # Input and output folder paths
 input_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_0_1/'
 input_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/0_1/'
-output_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked/'
+output_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_skeleton/'
 output_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_points/'
 
 # Create the output folder if it doesn't exist
 os.makedirs(output_folder2, exist_ok=True)
+os.makedirs(output_folder, exist_ok=True)
 
 def calculate_brightness(pixel):
     # You can use different methods to calculate brightness based on RGB values.
@@ -77,11 +78,12 @@ def find_and_mark_centroids(input_path, output_path):
             total_area += area
 
         # Calculate the common centroid by dividing the weighted sum by the total area
+    # marked_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     if total_area != 0:
         common_centroid_x = int(common_centroid_x / total_area)
         common_centroid_y = int(common_centroid_y / total_area)
 
-        # # Draw a red dot at the common centroid
+        # Draw a red dot at the common centroid
         # cv2.circle(marked_image, (common_centroid_x, common_centroid_y), 5, (0, 0, 255), -1)
     else:
         common_centroid_x = 'no_fish'
@@ -90,13 +92,13 @@ def find_and_mark_centroids(input_path, output_path):
 
     # Save the marked image
     # cv2.imwrite(output_path, marked_image)
-    return common_centroid_x, common_centroid_y, image
+    return common_centroid_x, common_centroid_y
 
 
-def head_finder(cx, cy, radius):
-    # image = Image.fromarray(image)
+def head_finder(cx, cy, radius, image):
+    image = Image.fromarray(image)
     # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
-    image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
+    # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
     # image = Image.fromarray(image)
     image = ImageOps.invert(image)
     # Initialize variables to keep track of the brightest spots
@@ -136,6 +138,7 @@ def head_finder(cx, cy, radius):
 number_of_files = len(os.listdir(input_folder))
 common_centroid_x = []
 common_centroid_y = []
+
 # Process all images in the input folder
 for filename in os.listdir(input_folder):
     if filename.endswith('.bmp'):
@@ -144,23 +147,18 @@ for filename in os.listdir(input_folder):
         output_path = os.path.join(output_folder, filename)
         output_path2 = os.path.join(output_folder2, filename)
         # mark_brightest_point_and_save_image(input_path, output_path)
-        cx, cy, image = find_and_mark_centroids(input_path, output_path2)
+        cx, cy = find_and_mark_centroids(input_path, output_path2)
         common_centroid_x.append(cx)
         common_centroid_y.append(cy)
-        # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
-        head = head_finder(cx, cy, 8)
+        image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
+        head = head_finder(cx, cy, 8, image)
 
         # Create a copy of the original image to mark centroids
         marked_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-        # print('Copied image')
         # Draw a red dot at the common centroid
         if cx != 'no_fish':
-            # print('marking:', cx, ', ', cy)
-            # print(cx)
             cv2.circle(marked_image, (cx, cy), 1, (0, 0, 255), -1)
-            # print(head[0])
             cv2.circle(marked_image, (int(head[0]), int(head[1])), 1, (255, 0, 0), -1)
-            # print('marked')
         cv2.imwrite(output_path2, marked_image)
 
 
