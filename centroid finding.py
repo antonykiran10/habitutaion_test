@@ -47,7 +47,7 @@ def find_and_mark_centroids(input_path, output_path):
     image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
     # Threshold the image to isolate areas with intensity
-    _, thresholded = cv2.threshold(image, 100, 255, cv2.THRESH_BINARY)
+    _, thresholded = cv2.threshold(image, 200, 255, cv2.THRESH_BINARY)
 
     # Find contours of the thresholded areas
     contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -84,7 +84,7 @@ def find_and_mark_centroids(input_path, output_path):
         common_centroid_y = int(common_centroid_y / total_area)
 
         # Draw a red dot at the common centroid
-        # cv2.circle(marked_image, (common_centroid_x, common_centroid_y), 5, (0, 0, 255), -1)
+        # cv2.circle(marked_image, (common_centroid_x, common_centroid_y), 5, (0, , 255), -1)
     else:
         common_centroid_x = 'no_fish'
         common_centroid_y = 'no_fish'
@@ -97,9 +97,6 @@ def find_and_mark_centroids(input_path, output_path):
 
 def head_finder(cx, cy, radius, image):
     image = Image.fromarray(image)
-    # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
-    # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
-    # image = Image.fromarray(image)
     image = ImageOps.invert(image)
     # Initialize variables to keep track of the brightest spots
     brightest_brightness = 0
@@ -134,6 +131,15 @@ def head_finder(cx, cy, radius, image):
     else:
         return 'no_fish', 'no_fish'
 
+
+def fish_hunter(radius, image, head, centroid):
+    direction_vector = head - centroid
+    image = Image.fromarray(image)
+    image = ImageOps.invert(image)
+    # Initialize variables to keep track of the brightest spots
+    brightest_brightness = 0
+    brightest_spots_x = []
+    brightest_spots_y = []
 
 number_of_files = len(os.listdir(input_folder))
 common_centroid_x = []
