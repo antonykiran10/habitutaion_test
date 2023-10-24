@@ -11,19 +11,19 @@ center = (2, 3)  # Change this to the desired center coordinates (x_c, y_c)
 fig, ax = plt.subplots()
 
 # Draw the circle
-circle = plt.Circle(center, radius, color='yellow', fill=True)
+circle = plt.Circle(center, radius, color='#b793cc', fill=True)
 ax.add_patch(circle)
 
 # Calculate the coordinates of the points for the red sector
 x = [center[0]]  # x-coordinate of the center
-y = [center[3]]  # y-coordinate of the center
+y = [center[1]]  # y-coordinate of the center
 theta = range(0, angle + 1)
 for t in theta:
     x.append(center[0] + radius * np.cos(np.deg2rad(t)))
     y.append(center[1] + radius * np.sin(np.deg2rad(t)))
 
 # Create a polygon for the red sector
-red_sector = patches.Polygon(list(zip(x, y)), closed=True, facecolor='red')
+red_sector = patches.Polygon(list(zip(x, y)), closed=True, facecolor='#5e964e')
 ax.add_patch(red_sector)
 
 # Set the aspect ratio to be equal
