@@ -30,6 +30,7 @@ def arc_hunter(point1, point2, radius):
     return arcp_mid, arcp_1, arcp_2
 
 def arc_inspector():
+    for
 
 
 point1 = [2,3]
