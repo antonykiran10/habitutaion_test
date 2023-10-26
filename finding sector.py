@@ -24,28 +24,26 @@ def arc_hunter(point1, point2, radius):
     # print(theta)
     ux = direction_v[0] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
     uy = direction_v[1] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-    x = int(point1[0] + radius * ux)
-    y = int(point1[1] + radius * uy)
+    x = (point1[0] + radius * ux)
+    y = (point1[1] + radius * uy)
     arcp_mid = [x, y]
-    arcp_1 = [int(point1[0] + radius * np.cos(np.deg2rad(theta - 30))),
-              int(point1[1] + radius * np.sin(np.deg2rad(theta - 30)))]
-    arcp_2 = [int(point1[0] + radius * np.cos(np.deg2rad(theta + 30))),
-              int(point1[1] + radius * np.sin(np.deg2rad(theta + 30)))]
+    arcp_1 = [(point1[0] + radius * np.cos(np.deg2rad(theta - 30))),
+              (point1[1] + radius * np.sin(np.deg2rad(theta - 30)))]
+    arcp_2 = [(point1[0] + radius * np.cos(np.deg2rad(theta + 30))),
+              (point1[1] + radius * np.sin(np.deg2rad(theta + 30)))]
     return arcp_mid, arcp_1, arcp_2
 
 
-def arc_inspector(arcp_mid, arcp_1, arcp_2, radius):
-    x_min = min(arcp_mid[0], arcp_1[0], arcp_2[0])
-    x_max = max(arcp_mid[0], arcp_1[0], arcp_2[0])
-    y_min = min(arcp_mid[1], arcp_1[1], arcp_2[1])
-    print(y_min)
-    print(arcp_mid)
-    y_max = max(arcp_mid[1], arcp_1[1], arcp_2[1])
+def arc_inspector(point1, arcp_1, arcp_2, radius):
+    x_min = min(point1[0], arcp_1[0], arcp_2[0])
+    x_max = max(point1[0], arcp_1[0], arcp_2[0])
+    y_min = min(point1[1], arcp_1[1], arcp_2[1])
+    y_max = max(point1[1], arcp_1[1], arcp_2[1])
     print(y_max)
     x_paint = []
     y_paint = []
-    m1 = (arcp_1[1] - arcp_mid[1]) / (arcp_1[0] - arcp_mid[0])
-    m2 = (arcp_2[1] - arcp_mid[1]) / (arcp_2[0] - arcp_mid[0])
+    m1 = (arcp_1[1] - point1[1]) / (arcp_1[0] - point1[0])
+    m2 = (arcp_2[1] - point1[1]) / (arcp_2[0] - point1[0])
     # for r in range(radius, radius+1):
     #     # print('in first loop')
     #     for x in range(x_min, x_max):
@@ -55,18 +53,17 @@ def arc_inspector(arcp_mid, arcp_1, arcp_2, radius):
     #             # print('in loop')
     #                 x_paint.append(x)
     #                 y_paint.append(y)
-    for x in range(x_min, x_max):
-        for y in range(y_min, y_max):
-            if radius ** 2 >= ((x - arcp_mid[0]) ** 2 + (y - arcp_mid[1]) ** 2) and y >= m1 * x + arcp_mid[
-                1] and y >= m2 * x + arcp_mid[1]:
+    for x in range(int (x_min), int(x_max) + 1):
+        for y in range(int(y_min), int(y_max) + 1):
+            if radius ** 2 >= ((x - point1[0]) ** 2 + (y - point1[1]) ** 2) and y >= m1 * x + point1[1] and y <= m2 * x + point1[1]:
                 x_paint.append(x)
                 y_paint.append(y)
     return x_paint, y_paint
 
 
-point1 = [2, 3]
-point2 = [4, 7]
-radius = 20
+point1 = [2, 8]
+point2 = [4, 10]
+radius = 25
 arcp_mid, arcp_1, arcp_2 = arc_hunter(point1, point2, radius)
 
 x_paint, y_paint = arc_inspector(point1, arcp_1, arcp_2, radius)
@@ -94,11 +91,17 @@ plt.scatter(x_paint, y_paint, c='red', label='Points')
 # Add labels to the points
 for i, (x, y) in enumerate(zip(x_values, y_values)):
     plt.annotate(f'({x},{y})', (x, y), textcoords="offset points", xytext=(0, 10), ha='center')
-
+#
+# plt.xlim([min(x_paint)-1, max(x_paint)+1])
+# plt.ylim([min(y_paint)-1, max(y_paint)+1])
 # Set axis labels
 plt.xlabel('X-axis')
 plt.ylabel('Y-axis')
-
+# ax.set_aspect('equal', adjustable='box')
+# plt.axis('equal')
+ax = plt.gca()
+ax.set_aspect('equal', adjustable='box')
+# plt.draw()
 # Set the title of the plot
 plt.title('Scatter Plot of Points')
 
