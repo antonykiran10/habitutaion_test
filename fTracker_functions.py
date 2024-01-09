@@ -1,5 +1,4 @@
 import cv2
-import os
 import numpy as np
 from PIL import ImageOps
 from PIL import Image
@@ -70,7 +69,7 @@ def head_finder(cx, cy, radius, image):
                 pixel = image.getpixel((x, y))
                 # brightness = calculate_brightness(pixel)
                 brightness = pixel
-                if brightness > brightest_brightness:
+                if brightness > brightest_brightness and cx != x and cy != y:
                     brightest_brightness = brightness
           # find the points with maximum intensity
         for x in range(cx - radius, cx + radius):
@@ -86,25 +85,34 @@ def head_finder(cx, cy, radius, image):
             headx = sum(x for x in brightest_spots_x) / len(brightest_spots_x)
             heady = sum(y for y in brightest_spots_y) / len(brightest_spots_y)
         head = (headx, heady)
-        return head
+        return headx, heady
     else:
         return 'no_fish', 'no_fish'
 
-def arc_hunter(point1, point2, radius):
-    direction_v = (point2[0] - point1[0], point2[1] - point1[1])
-    theta = np.rad2deg(np.arctan(direction_v[1] / direction_v[0]))
+def arc_hunter(head_x, head_y, centroid_x, centroid_y, radius):
+    direction_v = (centroid_x - head_x, centroid_y - head_y)
+    if direction_v[0] != 0:
+        theta = np.rad2deg(np.arctan(direction_v[1] / direction_v[0]))
+    else:
+        theta = np.deg2rad(90)
     # print(theta)
-    ux = direction_v[0] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-    uy = direction_v[1] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-    x = (point1[0] + radius * ux)
-    y = (point1[1] + radius * uy)
-    arcp_mid = [x, y]
-    arcp_1 = [(point1[0] + radius * np.cos(np.deg2rad(theta - 30))),
-              (point1[1] + radius * np.sin(np.deg2rad(theta - 30)))]
-    arcp_2 = [(point1[0] + radius * np.cos(np.deg2rad(theta + 30))),
-              (point1[1] + radius * np.sin(np.deg2rad(theta + 30)))]
-    return arcp_mid, arcp_1, arcp_2
-def arc_inspector(point1, arcp_1, arcp_2, radius, image_path):
+    if head_x != centroid_x and head_y != centroid_y:
+        ux = direction_v[0] / sqrt((head_x - centroid_x) ** 2 + (head_y - centroid_y) ** 2)
+        uy = direction_v[1] / sqrt((head_x - centroid_x) ** 2 + (head_y - centroid_y) ** 2)
+        x = (head_x + radius * ux)
+        y = (head_y + radius * uy)
+        arcp_mid = [x, y]
+        arcp_1 = [(head_x + radius * np.cos(np.deg2rad(theta - 30))),
+                  (head_y + radius * np.sin(np.deg2rad(theta - 30)))]
+        arcp_2 = [(head_x + radius * np.cos(np.deg2rad(theta + 30))),
+                  (head_y + radius * np.sin(np.deg2rad(theta + 30)))]
+        return arcp_mid, arcp_1, arcp_2
+    else:
+        print('Error; Increase radius size')
+        exit(0)
+
+def arc_inspector(point1_x, point1_y, arcp_1, arcp_2, radius, image_path):
+    point1 = [point1_x, point1_y]
     if point1[0] != 'no_fish' and arcp_1[0] != 'no_fish' and arcp_2[0] != 'no_fish':
         image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
         x_min = min(int(point1[0]), int(arcp_1[0]), int(arcp_2[0]))
@@ -132,83 +140,15 @@ def arc_inspector(point1, arcp_1, arcp_2, radius, image_path):
     else:
         return 0,0
 
-def fish_hunter(radius, input_path, head, centroid):
-    points = []
-    points.append(head)
-    if centroid[1] != 'no_fish' and points[-1] != 'no_fish':
-        # image = cv2.imread(output_path5, cv2.IMREAD_GRAYSCALE)
-        while len(points) < 3:
-            arcp_mid, arcp_1, arcp_2 = arc_hunter(head, centroid, 5)
-            x_pix_post, y_pix_post = arc_inspector(points[-1], arcp_1, arcp_2, radius, output_path5)
-            points.append([x_pix_post, y_pix_post])
-        print(points)
-
-
-
-
-# Input and output folder paths
-input_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_0_1/'
-input_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/0_1/'
-output_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_skeleton/'
-output_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_points/'
-output_folder3 = '/home/antony/projects/roopsali/Habituation/120fps well/output_binarised/'
-output_folder4 = '/home/antony/projects/roopsali/Habituation/120fps well/output_closed/'
-output_folder5 = '/home/antony/projects/roopsali/Habituation/120fps well/output_skeletonised/'
-
-# Create the output folder if it doesn't exist
-os.makedirs(output_folder2, exist_ok=True)
-os.makedirs(output_folder, exist_ok=True)
-os.makedirs(output_folder3, exist_ok=True)
-os.makedirs(output_folder4, exist_ok=True)
-os.makedirs(output_folder5, exist_ok=True)
-
-number_of_files = len(os.listdir(input_folder))
-common_centroid_x = []
-common_centroid_y = []
-
-# Process all images in the input folder
-for filename in os.listdir(input_folder):
-    if filename.endswith('.bmp'):
-        input_path = os.path.join(input_folder, filename)
-        input_path2 = os.path.join(input_folder2, filename)
-        output_path = os.path.join(output_folder, filename)
-        output_path2 = os.path.join(output_folder2, filename)
-        output_path3 = os.path.join(output_folder3, filename)
-        output_path4 = os.path.join(output_folder4, filename)
-        output_path5 = os.path.join(output_folder5, filename)
-        # mark_brightest_point_and_save_image(input_path, output_path)
-        cx, cy = find_and_mark_centroids(input_path, output_path2)
-        common_centroid_x.append(cx)
-        common_centroid_y.append(cy)
-        image_1 = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
-        _, binary_image = cv2.threshold(image_1, 50, 255, cv2.THRESH_BINARY)
-        cv2.imwrite(output_path3, binary_image)
-
-        # Define a kernel (structuring element) for morphological operations
-        kernel_size = 4
-        kernel = np.ones((kernel_size, kernel_size), np.uint8)
-
-        # Perform morphological closing
-        closed_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
-        cv2.imwrite(output_path4, closed_image)
-
-        # Apply skeletonization
-        skeleton = cv2.ximgproc.thinning(closed_image)
-        cv2.imwrite(output_path5, skeleton)
-
-        image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
-        head = head_finder(cx, cy, 8, image)
-
-        # Create a copy of the original image to mark centroids
-        marked_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-        # Draw a red dot at the common centroid
-        if cx != 'no_fish':
-            cv2.circle(marked_image, (cx, cy), 1, (0, 0, 255), -1)
-            cv2.circle(marked_image, (int(head[0]), int(head[1])), 1, (255, 0, 0), -1)
-        cv2.imwrite(output_path, marked_image)
-        centroid = (cx, cy)
-        fish_hunter(3, output_path5, head, centroid)
-
-
-print("Images processed and saved in the output folder.")
-
+def fish_hunter(radius, input_path, head_x, head_y, centroid_x, centroid_y):
+    points_x = []
+    points_y = []
+    points_x.append(head_x)
+    points_y.append(head_y)
+    if centroid_x != 'no_fish' and points_x[-1] != 'no_fish':
+        # image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+        while len(points_x) < 3:
+            arcp_mid, arcp_1, arcp_2 = arc_hunter(head_x, head_y, centroid_x, centroid_y, 5)
+            x_pix_post, y_pix_post = arc_inspector(points_x[-1], points_y[-1], arcp_1, arcp_2, radius, input_path)
+            points_x.append(x_pix_post)
+            points_y.append(y_pix_post)

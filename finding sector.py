@@ -24,13 +24,13 @@ def arc_hunter(point1, point2, radius):
     # print(theta)
     ux = direction_v[0] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
     uy = direction_v[1] / sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-    x = (point1[0] + radius * ux)
-    y = (point1[1] + radius * uy)
+    x = int(point1[0] + radius * ux)
+    y = int(point1[1] + radius * uy)
     arcp_mid = [x, y]
-    arcp_1 = [(point1[0] + radius * np.cos(np.deg2rad(theta - 30))),
-              (point1[1] + radius * np.sin(np.deg2rad(theta - 30)))]
-    arcp_2 = [(point1[0] + radius * np.cos(np.deg2rad(theta + 30))),
-              (point1[1] + radius * np.sin(np.deg2rad(theta + 30)))]
+    arcp_1 = [int(point1[0] + radius * np.cos(np.deg2rad(theta - 30))),
+              int(point1[1] + radius * np.sin(np.deg2rad(theta - 30)))]
+    arcp_2 = [int(point1[0] + radius * np.cos(np.deg2rad(theta + 30))),
+              int(point1[1] + radius * np.sin(np.deg2rad(theta + 30)))]
     return arcp_mid, arcp_1, arcp_2
 
 
@@ -53,16 +53,16 @@ def arc_inspector(point1, arcp_1, arcp_2, radius):
     #             # print('in loop')
     #                 x_paint.append(x)
     #                 y_paint.append(y)
-    for x in range(int (x_min), int(x_max) + 1):
-        for y in range(int(y_min), int(y_max) + 1):
-            if radius ** 2 >= ((x - point1[0]) ** 2 + (y - point1[1]) ** 2) and y >= m1 * x + point1[1] and y <= m2 * x + point1[1]:
+    for x in range(int (x_min), int(x_max)):
+        for y in range(int(y_min), int(y_max)):
+            if 0 >= ((x - point1[0]) ** 2 + (y - point1[1]) ** 2) - radius ** 2 and m1 * (x - point1[0]) <= (y - point1[1]) and m2 * (x - point1[0]) >= (y - point1[1]):
                 x_paint.append(x)
                 y_paint.append(y)
     return x_paint, y_paint
 
 
 point1 = [2, 8]
-point2 = [4, 10]
+point2 = [4, 8]
 radius = 25
 arcp_mid, arcp_1, arcp_2 = arc_hunter(point1, point2, radius)
 
@@ -70,6 +70,8 @@ x_paint, y_paint = arc_inspector(point1, arcp_1, arcp_2, radius)
 
 x_values = [point1[0], point2[0], arcp_mid[0], arcp_1[0], arcp_2[0]]
 y_values = [point1[1], point2[1], arcp_mid[1], arcp_1[1], arcp_2[1]]
+print('Point 1: ', x_values[3], y_values[3])
+print('Point 2: ', x_values[4], y_values[4])
 
 # interactive ploting
 # https://stackoverflow.com/questions/41443985/pythonmatplotlib-update-scatter-graph-in-real-time
