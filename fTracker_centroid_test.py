@@ -43,6 +43,7 @@ series = sorted(series, key=extract_number)
 flag = 0
 for filename in series:
     if filename.endswith('.bmp'):
+        print(filename)
         head_x, head_y = 'no_fish', 'no_fish'
         input_path = os.path.join(input_folder, filename)
         input_path2 = os.path.join(input_folder2, filename)
@@ -52,35 +53,36 @@ for filename in series:
         output_path4 = os.path.join(output_folder4, filename)
         output_path5 = os.path.join(output_folder5, filename)
         # mark_brightest_point_and_save_image(input_path, output_path)
-        centroid_x_0, centroid_y_0 = ft.find_and_mark_centroids(input_path, output_path2) # found the centroid
+        # centroid_x_0, centroid_y_0 = ft.find_and_mark_centroids(input_path, output_path2) # found the centroid
         image_original = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
         image_subtracted = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
-        centroid_corr_radius = 10
-        centroid_x, centroid_y = ft.head_finder(centroid_x_0, centroid_y_0, centroid_corr_radius, image_original)
+        # centroid_corr_radius = 10
+        # centroid_x, centroid_y = ft.find_and_mark_centroids(input_path, output_path2)
+        centroid_x, centroid_y = ft.find_centroid(input_path, cutoff= 14000)
 
-        head_radius = 3
-        if centroid_y != 'no_fish':
-            head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, image_original)
-            if centroid_y != 'no_fish':
-                if np.sqrt((centroid_x - head_x)**2 + (centroid_y - head_x)**2) == 0:
-                    flag+=1
-                    print(centroid_x, head_x, centroid_y, head_y)
-            # image_1 = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
-        _, binary_image = cv2.threshold(image_subtracted, 50, 255, cv2.THRESH_BINARY)
-        cv2.imwrite(output_path3, binary_image)
+        # head_radius = 3
+        # if centroid_y != 'no_fish':
+        #     head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, image_original)
+        #     if centroid_y != 'no_fish':
+        #         if np.sqrt((centroid_x - head_x)**2 + (centroid_y - head_x)**2) == 0:
+        #             flag+=1
+        #             print(centroid_x, head_x, centroid_y, head_y)
+        #     # image_1 = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+        # _, binary_image = cv2.threshold(image_subtracted, 50, 255, cv2.THRESH_BINARY)
+        # cv2.imwrite(output_path3, binary_image)
+        # #
+        # # Define a kernel (structuring element) for morphological operations
+        # kernel_size = 4
+        # kernel = np.ones((kernel_size, kernel_size), np.uint8)
         #
-        # Define a kernel (structuring element) for morphological operations
-        kernel_size = 4
-        kernel = np.ones((kernel_size, kernel_size), np.uint8)
-
-        # Perform morphological closing
-        closed_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
-        cv2.imwrite(output_path4, closed_image)
-
-        # Apply skeletonization
-        skeleton = cv2.ximgproc.thinning(closed_image)
-        cv2.imwrite(output_path5, skeleton)
+        # # Perform morphological closing
+        # closed_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel)
+        # cv2.imwrite(output_path4, closed_image)
+        #
+        # # Apply skeletonization
+        # skeleton = cv2.ximgproc.thinning(closed_image)
+        # cv2.imwrite(output_path5, skeleton)
             #
             # image = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
 
@@ -90,7 +92,7 @@ for filename in series:
             # Draw a red dot at the common centroid
         if centroid_x != 'no_fish':
             cv2.circle(marked_image, (int(centroid_x), int(centroid_y)), 1, (0, 0, 255), -1)
-            cv2.circle(marked_image, (int(head_x), int(head_y)), 1, (0, 255, 0), -1)
+            # cv2.circle(marked_image, (int(head_x), int(head_y)), 1, (0, 255, 0), -1)
         cv2.imwrite(output_path, marked_image)
         # # centroid = (centroid_x, centroid_y)
         # ft.fish_hunter(3, output_path5, head_x, head_y, centroid_x, centroid_y)
