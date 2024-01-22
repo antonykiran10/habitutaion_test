@@ -193,13 +193,12 @@ def fish_hunter(radius,theta, input_path, head_x, head_y, centroid_x, centroid_y
     points_y.append(head_y)
     if centroid_x != 'no_fish':
         # image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
-        x,y = hunter(radius, theta, input_path, head_x, head_y, centroid_x, centroid_y)
+        x,y = hunter(radius, theta, input_path,centroid_x, centroid_y, head_x, head_y)
         points_x.append(x)
         points_y.append(y)
-        while len(points_x) < 7:
-            # if points_x[-1] != 'no_fish' and points_x[-2] == 'no_fish':
-                # arcp_mid, arcp_1, arcp_2 = arc_hunter(points_x[-1], points_y[-1], centroid_x, centroid_y, radius)
-                # x_pix_post, y_pix_post = arc_inspector(points_x[-1], points_y[-1], arcp_1, arcp_2, radius, input_path)
+        while len(points_x) < 15:
+            # print('Calling the hunter**********************')
+            # input("Press Enter to continue...")
             x_pix_post, y_pix_post = hunter(radius, theta, input_path, points_x[-2], points_y[-2], points_x[-1], points_y[-1])
             points_x.append(x_pix_post)
             points_y.append(y_pix_post)
@@ -209,23 +208,32 @@ def hunter(radius, theta, input_path, p1_x, p1_y, p2_x, p2_y):
     image_skeleton = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
     # pixel = image_skeleton[3, 20]
     # print(pixel)
-
-    if p1_x != 'no_fish' and p2_x != 'no_fish' and p1_y != p2_y:
+    if p1_x != 'no_fish' and p2_x != 'no_fish':
         d = np.sqrt((p2_x - p1_x) ** 2 + (p2_y - p1_y) ** 2)
+        if d == 0:
+            print('zero encountered*******************************************************************************')
+            input("Press Enter to continue...")
+
+    if p1_x != 'no_fish' and p2_x != 'no_fish' and d > 0:
+        # d = np.sqrt((p2_x - p1_x) ** 2 + (p2_y - p1_y) ** 2)
         for i in range(radius, 1, -1):
             for j in range(-theta, theta):
+                updating_radius = i
+                updating_theta = j
                 point_x, point_y = 'no_fish', 'no_fish'
-                x = p1_x + i * ((p2_x-p1_x)*np.cos(np.deg2rad(j))/d - (p2_y-p1_y)*np.sin(np.deg2rad(j))/d)
-                y = p1_y + i * ((p2_x - p1_x) * np.sin(np.deg2rad(j)) / d + (p2_y - p1_y) * np.cos(np.deg2rad(j)) / d)
-                if np.isnan(np.deg2rad(j)) or np.isnan(y):
-                    print(np.deg2rad(j))
+                x = p1_x + updating_radius * ((p2_x-p1_x)*np.cos(np.deg2rad(updating_theta))/d - (p2_y-p1_y)*np.sin(np.deg2rad(updating_theta))/d)
+                y = p1_y + updating_radius * ((p2_x - p1_x) * np.sin(np.deg2rad(updating_theta)) / d + (p2_y - p1_y) * np.cos(np.deg2rad(updating_theta)) / d)
+                # if np.isnan(np.deg2rad(j)) or np.isnan(y):
+                #     print(np.deg2rad(j))
                 # print('Just before pixel')
-                pixel = image_skeleton[int(x), int(y)]
+                pixel = image_skeleton[int(y), int(x)]
                 # print(pixel)
                 # print('Reached')
                 if pixel > 0:
                     point_x, point_y = x, y
                     break
+            if pixel > 0:
+                break
         return point_x, point_y
 
     else:
