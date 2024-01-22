@@ -61,7 +61,7 @@ Two lists, `points_x` and `points_y`, representing the predicted trajectory poin
 
 ### Purpose:
 
-This function is the core of the hunting algorithm, which predicts the next position of the fish based on its previous position.
+This function is the core of the hunting algorithm, which predicts the next position of the next point on the fish based on the previous point.
 
 ### Parameters:
 
