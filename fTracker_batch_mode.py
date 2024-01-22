@@ -1,8 +1,10 @@
 import os
-import fTracker_functions as ft
+
 import cv2
 import numpy as np
 import pandas as pd
+
+import fTracker_functions as ft
 
 # Input and output folder paths
 input_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_0_1/'
@@ -35,13 +37,15 @@ def add_row(data_list):
     global df
     new_row = pd.DataFrame([data_list], columns=columns)
     df = pd.concat([df, new_row], ignore_index=True)
+
+
 def extract_number(square):
     return int(square.split('_')[1].split('.')[0])
+
 
 series = os.listdir(input_folder)
 series = sorted(series, key=extract_number)
 flag = 0
-
 
 for filename in series:
     print(filename)
@@ -59,7 +63,7 @@ for filename in series:
         image_subtracted = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
         # centroid_corr_radius = 10
-        centroid_x, centroid_y = ft.find_centroid(input_path, cutoff= 14000) # find centroid
+        centroid_x, centroid_y = ft.find_centroid(input_path, cutoff=14000)  # find centroid
 
         # Find the head point
         head_radius = 8
@@ -87,18 +91,20 @@ for filename in series:
 
         marked_image = cv2.cvtColor(skeleton, cv2.COLOR_GRAY2BGR)
 
-        points_x, points_y = ft.fish_hunter(5,30, output_path5, head_x, head_y, centroid_x, centroid_y)
+        points_x, points_y = ft.fish_hunter(5, 30, output_path5, head_x, head_y, centroid_x, centroid_y)
 
         columns = ['Frame', 'Centroid_x', 'Centroid_y', 'Head_x', 'Head_y', 'P1_x', 'P1_y', 'P2_x', 'P2_y', 'P3_x',
-                   'P3_y', 'P4_x', 'P4_y', 'P5_x', 'P5_y', 'P6_x', 'P6_y', 'P7_x', 'P7_y', 'P8_x', 'P8_y', 'P9_x', 'P9_y', 'P10_x',
+                   'P3_y', 'P4_x', 'P4_y', 'P5_x', 'P5_y', 'P6_x', 'P6_y', 'P7_x', 'P7_y', 'P8_x', 'P8_y', 'P9_x',
+                   'P9_y', 'P10_x',
                    'P10_y', 'P11_x', 'P11_y', 'P12_x', 'P12_y', 'P13_x', 'P13_y', 'P14_x', 'P14_y']
         new_row_data = pd.DataFrame(columns=columns)
 
         new_row_data = [filename, 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish',
                         'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish',
-                        'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish',
+                        'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish',
+                        'no_fish', 'no_fish',
                         'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish']
-                        # 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish']
+        # 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish', 'no_fish']
 
         if (centroid_x != 'no_fish'):
             limit = len(points_x)
@@ -141,15 +147,15 @@ for filename in series:
                 cv2.circle(marked_image, (int(head_x), int(head_y)), 1, (0, 255, 0), -1)
             if points_x[1] != 'no_fish' and 1 < limit:
                 cv2.circle(marked_image, (int(points_x[1]), int(points_y[1])), 1, (255, 0, 0), -1)
-            if points_x[2] != 'no_fish'and 2 < limit:
+            if points_x[2] != 'no_fish' and 2 < limit:
                 cv2.circle(marked_image, (int(points_x[2]), int(points_y[2])), 1, (255, 0, 0), -1)
-            if points_x[3] != 'no_fish'and 3 < limit:
+            if points_x[3] != 'no_fish' and 3 < limit:
                 cv2.circle(marked_image, (int(points_x[3]), int(points_y[3])), 1, (255, 0, 0), -1)
-            if points_x[4] != 'no_fish'and 4 < limit:
+            if points_x[4] != 'no_fish' and 4 < limit:
                 cv2.circle(marked_image, (int(points_x[4]), int(points_y[4])), 1, (255, 0, 0), -1)
-            if points_x[5] != 'no_fish'and 5 < limit:
+            if points_x[5] != 'no_fish' and 5 < limit:
                 cv2.circle(marked_image, (int(points_x[5]), int(points_y[5])), 1, (255, 0, 0), -1)
-            if points_x[6] != 'no_fish'and 6 < limit:
+            if points_x[6] != 'no_fish' and 6 < limit:
                 cv2.circle(marked_image, (int(points_x[6]), int(points_y[6])), 1, (255, 0, 0), -1)
             if points_x[7] != 'no_fish' and 7 < limit:
                 cv2.circle(marked_image, (int(points_x[6]), int(points_y[6])), 1, (255, 0, 0), -1)
@@ -172,7 +178,6 @@ for filename in series:
         else:
             add_row(new_row_data)
         cv2.imwrite(output_path, marked_image)
-
 
 df.to_csv('/home/antony/projects/roopsali/Habituation/120fps well/output.csv', index=False)
 print(flag)
