@@ -7,22 +7,22 @@ import pandas as pd
 import fTracker_functions as ft
 
 # Input and output folder paths
-input_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_0_1/'
-input_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/0_1/'
+background_sub_img_path = '/home/antony/projects/roopsali/Habituation/120fps well/output_0_1/'
+original_img_path = '/home/antony/projects/roopsali/Habituation/120fps well/0_1/'
 output_folder = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_skeleton/'
-output_folder2 = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_points/'
-output_folder3 = '/home/antony/projects/roopsali/Habituation/120fps well/output_binarised/'
-output_folder4 = '/home/antony/projects/roopsali/Habituation/120fps well/output_closed/'
-output_folder5 = '/home/antony/projects/roopsali/Habituation/120fps well/output_skeletonised/'
+fish_marked_points = '/home/antony/projects/roopsali/Habituation/120fps well/output_marked_points/'
+fish_binarised_path = '/home/antony/projects/roopsali/Habituation/120fps well/output_binarised/'
+fish_closed_path = '/home/antony/projects/roopsali/Habituation/120fps well/output_closed/'
+fish_skeleton_path = '/home/antony/projects/roopsali/Habituation/120fps well/output_skeletonised/'
 
 # Create the output folder if it doesn't exist
-os.makedirs(output_folder2, exist_ok=True)
+os.makedirs(fish_marked_points, exist_ok=True)
 os.makedirs(output_folder, exist_ok=True)
-os.makedirs(output_folder3, exist_ok=True)
-os.makedirs(output_folder4, exist_ok=True)
-os.makedirs(output_folder5, exist_ok=True)
+os.makedirs(fish_binarised_path, exist_ok=True)
+os.makedirs(fish_closed_path, exist_ok=True)
+os.makedirs(fish_skeleton_path, exist_ok=True)
 
-number_of_files = len(os.listdir(input_folder))
+number_of_files = len(os.listdir(background_sub_img_path))
 common_centroid_x = []
 common_centroid_y = []
 
@@ -43,7 +43,7 @@ def extract_number(square):
     return int(square.split('_')[1].split('.')[0])
 
 
-series = os.listdir(input_folder)
+series = os.listdir(background_sub_img_path)
 series = sorted(series, key=extract_number)
 flag = 0
 
@@ -51,13 +51,13 @@ for filename in series:
     print(filename)
     if filename.endswith('.bmp'):
         # head_x, head_y = 'no_fish', 'no_fish'
-        input_path = os.path.join(input_folder, filename)
-        input_path2 = os.path.join(input_folder2, filename)
+        input_path = os.path.join(background_sub_img_path, filename)
+        input_path2 = os.path.join(original_img_path, filename)
         output_path = os.path.join(output_folder, filename)
-        output_path2 = os.path.join(output_folder2, filename)
-        output_path3 = os.path.join(output_folder3, filename)
-        output_path4 = os.path.join(output_folder4, filename)
-        output_path5 = os.path.join(output_folder5, filename)
+        output_path2 = os.path.join(fish_marked_points, filename)
+        output_path3 = os.path.join(fish_binarised_path, filename)
+        output_path4 = os.path.join(fish_closed_path, filename)
+        output_path5 = os.path.join(fish_skeleton_path, filename)
 
         image_original = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
         image_subtracted = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
