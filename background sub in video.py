@@ -1,4 +1,5 @@
 # Python code for Background subtraction using OpenCV
+# Copyright (c) 2024 Antony Kiran K David
 # ref: https://www.geeksforgeeks.org/python-background-subtraction-using-opencv/
 
 import numpy as np

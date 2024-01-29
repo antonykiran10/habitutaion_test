@@ -1,3 +1,6 @@
+# Code to extarct each well from a 96 well plate
+# Copyright (c) 2024 Antony Kiran K David
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from PIL import Image
@@ -66,6 +69,23 @@ def divide_into_squares(image_path, output_folder, x_start, y_start, x_end, y_en
             output_filename = f"square_{count}.bmp"
             output_path = f"{output_folder}/{row}_{col}/{output_filename}"
             square.save(output_path)
+
+def stripper(input_path, output_path, n_col, n_row):
+    # Mark the area of interest interactively
+    images = [file for file in os.listdir(input_path) if file.lower().endswith('.bmp')]
+    first_image = input_path + images[0]
+    x_start, y_start, x_end, y_end = mark_area_of_interest(first_image)
+
+    # Divide the selected area into 3x3 squares and save them separately
+    images = sorted(images, key=lambda x: int(re.search(r'\d+', x).group()))
+
+    count = 0
+    for image in images:
+        count += 1
+        print(image)
+        divide_into_squares(input_path + image, output_path, x_start, y_start, x_end, y_end, count, n_col,
+                            n_row)
+
 
 if __name__ == "__main__":
 

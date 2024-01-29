@@ -3,8 +3,9 @@ import numpy as np
 from PIL import Image
 from PIL import ImageOps
 
+# Copyright (c) 2024 Antony Kiran K David
+# Function to find centroid based on the average position of brightest points.
 
-# Function to find centroid based on the average position of brightest ponints.
 def find_centroid(input_path, cutoff):
     # Load the image
     image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
