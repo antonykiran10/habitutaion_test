@@ -6,6 +6,7 @@ from matplotlib.patches import Rectangle
 from PIL import Image
 import os
 import re
+import tools
 
 def mark_area_of_interest(image_path):
     # Load the image
@@ -78,6 +79,7 @@ def stripper(input_path, output_path, n_col, n_row):
 
     # Divide the selected area into 3x3 squares and save them separately
     images = sorted(images, key=lambda x: int(re.search(r'\d+', x).group()))
+    tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
 
     count = 0
     for image in images:
@@ -85,6 +87,7 @@ def stripper(input_path, output_path, n_col, n_row):
         print(image)
         divide_into_squares(input_path + image, output_path, x_start, y_start, x_end, y_end, count, n_col,
                             n_row)
+    print('Individual wells saved...')
 
 
 if __name__ == "__main__":
