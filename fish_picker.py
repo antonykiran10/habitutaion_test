@@ -5,13 +5,14 @@
 import numpy as np
 import cv2
 
-def picker(video_in, video_out, threshold):
+def picker(video_in, video_out, fps, threshold = 16):
 
     cap = cv2.VideoCapture(video_in)
     # Create a VideoWriter object to save the output video
     fourcc = cv2.VideoWriter_fourcc(*'XVID')  # You can change the codec as needed
-    out = cv2.VideoWriter(video_out, fourcc, 120.0, (int(cap.get(3)), int(cap.get(4))), isColor=False)
+    out = cv2.VideoWriter(video_out, fourcc, fps, (int(cap.get(3)), int(cap.get(4))), isColor=False)
 
+    # fgbg = cv2.createBackgroundSubtractorMOG2(varThreshold=threshold
     fgbg = cv2.createBackgroundSubtractorMOG2(varThreshold=threshold)
 
     while (1):

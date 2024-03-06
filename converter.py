@@ -6,11 +6,11 @@ from ffmpy import FFmpeg
 import os
 def mp4_to_bmp(path, filename):
     os.chdir(path)
-    os.makedirs(path + 'motion_selected_' + filename, exist_ok=True)
+    os.makedirs(path + filename[:-4], exist_ok=True)
 
     ff = FFmpeg(
         inputs={str(filename): None},
-        outputs={'./motion_selected_' + filename + '/square_%d.bmp': '-pix_fmt rgb24'}
+        outputs={'./' + filename[:-4] + '/square_%d.bmp': '-pix_fmt rgb24'}
     )
     print(ff.cmd)
     ff.run()

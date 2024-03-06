@@ -11,7 +11,7 @@ def find_centroid(input_path, cutoff):
     image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
     # Initialize variables to keep track of the brightest spots
-    threshold_brightness = 250
+    threshold_brightness = 50
     bright_spots = []
     height, width = image.shape[:2]
 

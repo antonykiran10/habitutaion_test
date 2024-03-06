@@ -74,6 +74,7 @@ def divide_into_squares(image_path, output_folder, x_start, y_start, x_end, y_en
 def stripper(input_path, output_path, n_col, n_row):
     # Mark the area of interest interactively
     images = [file for file in os.listdir(input_path) if file.lower().endswith('.bmp')]
+    # print(images)
     first_image = input_path + images[0]
     x_start, y_start, x_end, y_end = mark_area_of_interest(first_image)
 

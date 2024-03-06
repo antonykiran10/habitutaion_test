@@ -60,10 +60,12 @@ for filename in series:
         output_path5 = os.path.join(fish_skeleton_path, filename)
 
         image_original = cv2.imread(input_path2, cv2.IMREAD_GRAYSCALE)
+        # print(image_original)
         image_subtracted = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
-
+        # print(image_subtracted)
         # centroid_corr_radius = 10
         centroid_x, centroid_y = ft.find_centroid(input_path, cutoff=14000)  # find centroid
+        # print(centroid_x, centroid_y)
 
         # Find the head point
         head_radius = 8
@@ -71,6 +73,7 @@ for filename in series:
             head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, image_original)
         else:
             head_x, head_y = 'no_fish', 'no_fish'
+            print(head_x, head_y)
 
         # Image operations
         # ----------------------------------------------------------------
