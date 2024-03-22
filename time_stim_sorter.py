@@ -125,43 +125,49 @@ image_folder = '120fps'
 image_directory = parent_folder + image_folder + '/'
 series = os.listdir(image_directory)
 
-# Sort the filenames based on the numbers extracted
-sorted_filenames = sorted(series, key=sort_by_numbers)
-# series = sorted(series, key=tools.extract_number)
+def stim_sorter(parent_folder, image_folder, sis_row_loc = 3, tap_pixel_pos = 32):
+    bit_table = generate_bitTable()
+    image_directory = parent_folder + image_folder + '/'
+    series = os.listdir(image_directory)
+    # Sort the filenames based on the numbers extracted
+    sorted_filenames = sorted(series, key=sort_by_numbers)
+    # series = sorted(series, key=tools.extract_number)
 
-time_in_image, stim_index, bad_frames = extract_timestamp(image_directory, sorted_filenames, bit_table, sis_row_loc, tap_pixel_pos)
+    time_in_image, stim_index, bad_frames = extract_timestamp(image_directory, sorted_filenames, bit_table, sis_row_loc, tap_pixel_pos)
 
-mover_index = np.zeros(len(sorted_filenames))
-flag = 0
-i=0
-while i < len(sorted_filenames):
-    if stim_index[i] == 1:
-        flag += 1
-    while stim_index[i] == 1:
-        mover_index[i] = flag
+    mover_index = np.zeros(len(sorted_filenames))
+    flag = 0
+    i=0
+    while i < len(sorted_filenames):
+        if stim_index[i] == 1:
+            flag += 1
+        while stim_index[i] == 1:
+            mover_index[i] = flag
+            i += 1
         i += 1
-    i += 1
 
-# Convert arrays to pandas DataFrame
-df = pd.DataFrame({'Time': time_in_image,'file name': sorted_filenames, 'Stimulus': stim_index, 'Mover': mover_index})
+    # Convert arrays to pandas DataFrame
+    df = pd.DataFrame({'Time': time_in_image,'file name': sorted_filenames, 'Stimulus': stim_index, 'Mover': mover_index})
 
-save_dir = os.path.dirname(os.path.dirname(image_directory))
+    save_dir = os.path.dirname(os.path.dirname(image_directory))
 
-# Save DataFrame to CSV file
-df.to_csv(save_dir + '/' + image_folder + '_stim_data.csv', index=False)
+    # Save DataFrame to CSV file
+    df.to_csv(save_dir + '/' + image_folder + '_stim_data.csv', index=False)
 
-print("Time-stamps extracted and saved.")
+    print("Time-stamps extracted and saved.")
 
-# Copy the pics into relevant folders
-for i in range(0, len(sorted_filenames)):
-    if mover_index[i] > 0:
-        # Source path
-        source = image_directory + sorted_filenames[i]
+    # Copy the pics into relevant folders
+    for i in range(0, len(sorted_filenames)):
+        if mover_index[i] > 0:
+            # Source path
+            source = image_directory + sorted_filenames[i]
 
-        # Destination path
-        os.makedirs(parent_folder + str(mover_index[i]), exist_ok=True)
-        destination = parent_folder + str(mover_index[i]) + '/' + sorted_filenames[i]
+            # Destination path
+            os.makedirs(parent_folder + str(int(mover_index[i])), exist_ok=True)
+            destination = parent_folder + str(int(mover_index[i])) + '/' + sorted_filenames[i]
 
-        # Copy the content of
-        # source to destination
-        dest = shutil.copyfile(source, destination)
+            # Copy the content of
+            # source to destination
+            dest = shutil.copyfile(source, destination)
+
+    return flag

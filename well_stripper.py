@@ -89,7 +89,26 @@ def stripper(input_path, output_path, n_col, n_row):
         divide_into_squares(input_path + image, output_path, x_start, y_start, x_end, y_end, count, n_col,
                             n_row)
     print('Individual wells saved...')
+    return x_start, y_start, x_end, y_end
 
+def batch_stripper(input_path, output_path, n_col, n_row, x_start, y_start, x_end, y_end):
+    # Mark the area of interest interactively
+    images = [file for file in os.listdir(input_path) if file.lower().endswith('.bmp')]
+    # print(images)
+    first_image = input_path + images[0]
+    # x_start, y_start, x_end, y_end = mark_area_of_interest(first_image)
+
+    # Divide the selected area into 3x3 squares and save them separately
+    images = sorted(images, key=lambda x: int(re.search(r'\d+', x).group()))
+    tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
+
+    count = 0
+    for image in images:
+        count += 1
+        print(image)
+        divide_into_squares(input_path + image, output_path, x_start, y_start, x_end, y_end, count, n_col,
+                            n_row)
+    print('Individual wells saved...')
 
 if __name__ == "__main__":
 
