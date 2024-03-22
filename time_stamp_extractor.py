@@ -1,8 +1,10 @@
-# https://gitlab.com/tomin-james/meenkando
-# (C) Tomin James
+# modified from: https://gitlab.com/tomin-james/meenkando
 
 import numpy as np
 import matplotlib.image as mpimg
+import os
+import re
+import pandas as pd
 # from meenkando.GeneratePlots import PlotFunctions
 
 
@@ -44,6 +46,7 @@ def extract_timestamp(dir_path, img_files, bit_table, sis_row_loc=3, tap_pixel_p
 
     while idx < len(img_files):
         img_name = img_files[idx]
+        print(img_name)
         try:
             im = mpimg.imread(dir_path + img_name)
             timeStampbit = []
@@ -78,7 +81,7 @@ def extract_timestamp(dir_path, img_files, bit_table, sis_row_loc=3, tap_pixel_p
     no_of_missing_frame = (time_in_image[-1] / frame_rate) - len(time_in_image)
 
     # check if any frames are missing or not
-    print("There are {} frames missing".format(int(no_of_missing_frame)))
+    # print("There are {} frames missing".format(int(no_of_missing_frame)))
     # if plots:
     #     PlotFunctions.time_stamp_plots(time_in_image, tap_index)
     return time_in_image, tap_index, bad_frames
@@ -104,3 +107,35 @@ def find_tap_positions(tap_idxs):
     ending_tap_idx = [i for i, j in enumerate(diff_tap_idx) if j == -1]
     print('Found %d tap occations' % len(starting_tap_idx))
     return starting_tap_idx, ending_tap_idx
+
+# Define a custom sorting function
+def sort_by_numbers(filename):
+    # Extract numbers from the filename
+    numbers = re.findall(r'\d+', filename)
+    # Convert the numbers to integers for proper numerical sorting
+    return int(numbers[0]) if numbers else float('inf')
+
+sis_row_loc = 3
+tap_pixel_pos = 32
+bit_table = generate_bitTable()
+
+parent_folder = '/home/antony/projects/roopsali/Habituation/code_tester/'
+image_folder = '120fps'
+image_directory = parent_folder + image_folder + '/'
+series = os.listdir(image_directory)
+
+# Sort the filenames based on the numbers extracted
+sorted_filenames = sorted(series, key=sort_by_numbers)
+# series = sorted(series, key=tools.extract_number)
+
+time_in_image, stim_index, bad_frames = extract_timestamp(image_directory, sorted_filenames, bit_table, sis_row_loc, tap_pixel_pos)
+
+# Convert arrays to pandas DataFrame
+df = pd.DataFrame({'Time': time_in_image, 'Stimulus': stim_index})
+
+save_dir = os.path.dirname(os.path.dirname(image_directory))
+
+# Save DataFrame to CSV file
+df.to_csv(save_dir + '/' + image_folder + '_stim_data.csv', index=False)
+
+print("DataFrame saved as 'points_data.csv'")
