@@ -130,12 +130,23 @@ sorted_filenames = sorted(series, key=sort_by_numbers)
 
 time_in_image, stim_index, bad_frames = extract_timestamp(image_directory, sorted_filenames, bit_table, sis_row_loc, tap_pixel_pos)
 
+mover_index = np.zeros(len(sorted_filenames))
+flag = 0
+i=0
+while i < len(sorted_filenames):
+    if stim_index[i] == 1:
+        flag += 1
+    while stim_index[i] == 1:
+        mover_index[i] = flag
+        i += 1
+    i += 1
+
 # Convert arrays to pandas DataFrame
-df = pd.DataFrame({'Time': time_in_image, 'Stimulus': stim_index})
+df = pd.DataFrame({'Time': time_in_image,'file name': sorted_filenames, 'Stimulus': stim_index, 'Mover': mover_index})
 
 save_dir = os.path.dirname(os.path.dirname(image_directory))
 
 # Save DataFrame to CSV file
 df.to_csv(save_dir + '/' + image_folder + '_stim_data.csv', index=False)
 
-print("DataFrame saved as 'points_data.csv'")
+print("Time-stamps extracted and saved.")
