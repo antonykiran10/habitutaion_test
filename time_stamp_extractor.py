@@ -5,6 +5,7 @@ import matplotlib.image as mpimg
 import os
 import re
 import pandas as pd
+import shutil
 # from meenkando.GeneratePlots import PlotFunctions
 
 
@@ -150,3 +151,17 @@ save_dir = os.path.dirname(os.path.dirname(image_directory))
 df.to_csv(save_dir + '/' + image_folder + '_stim_data.csv', index=False)
 
 print("Time-stamps extracted and saved.")
+
+# Copy the pics into relevant folders
+for i in range(0, len(sorted_filenames)):
+    if mover_index[i] > 0:
+        # Source path
+        source = image_directory + sorted_filenames[i]
+
+        # Destination path
+        os.makedirs(parent_folder + str(mover_index[i]), exist_ok=True)
+        destination = parent_folder + str(mover_index[i]) + '/' + sorted_filenames[i]
+
+        # Copy the content of
+        # source to destination
+        dest = shutil.copyfile(source, destination)
