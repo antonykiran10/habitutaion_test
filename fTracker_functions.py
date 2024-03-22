@@ -11,7 +11,7 @@ def find_centroid(input_path, cutoff):
     image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
 
     # Initialize variables to keep track of the brightest spots
-    threshold_brightness = 250
+    threshold_brightness = 120
     bright_spots = []
     height, width = image.shape[:2]
 
@@ -25,12 +25,12 @@ def find_centroid(input_path, cutoff):
                 brightness = pixel_value
 
                 # If the current pixel is as bright as the brightest one so far, add it to the list
-                if brightness == threshold_brightness:
+                if brightness >= threshold_brightness:
                     bright_spots.append((x, y))
                 # If the current pixel is brighter than the previous brightest one, update the list
-                elif brightness > threshold_brightness:
-                    threshold_brightness = brightness
-                    bright_spots = [(x, y)]
+                # elif brightness > threshold_brightness:
+                #     threshold_brightness = brightness
+                #     bright_spots = [(x, y)]
 
     # Calculate the average position of the brightest spots
     if bright_spots:
@@ -45,6 +45,7 @@ def find_centroid(input_path, cutoff):
 def head_finder(cx, cy, radius, image):
     image = Image.fromarray(image)
     image = ImageOps.invert(image)
+    # height, width = image.shape[:2]
     # Initialize variables to keep track of the brightest spots
     brightest_brightness = 0
     brightest_spots_x = []
@@ -73,8 +74,14 @@ def head_finder(cx, cy, radius, image):
         if brightest_spots_x:
             # headx = sum(x for x in brightest_spots_x) / len(brightest_spots_x)
             # heady = sum(y for y in brightest_spots_y) / len(brightest_spots_y)
-            headx = brightest_spots_x[0]
-            heady = brightest_spots_y[0]
+            x_list = np.array(brightest_spots_x)
+            y_list = np.array(brightest_spots_y)
+            x_dist = np.abs(x_list - cx)
+            y_dist = np.abs(y_list - cx)
+            dist_list = np.sqrt(np.add(np.square(x_dist), np.square(y_dist)))
+            farthest_point_index = np.argmax(dist_list)
+            headx = brightest_spots_x[farthest_point_index]
+            heady = brightest_spots_y[farthest_point_index]
         # head = (headx, heady)
         return headx, heady
     else:
@@ -103,8 +110,6 @@ def fish_hunter(radius, theta, input_path, head_x, head_y, centroid_x, centroid_
 
 def hunter(radius, theta, input_path, p1_x, p1_y, p2_x, p2_y):
     image_skeleton = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
-    # pixel = image_skeleton[3, 20]
-    # print(pixel)
     if p1_x != 'no_fish' and p2_x != 'no_fish':
         d = np.sqrt((p2_x - p1_x) ** 2 + (p2_y - p1_y) ** 2)
         if d == 0:

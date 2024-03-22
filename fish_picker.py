@@ -13,7 +13,7 @@ def picker(video_in, video_out, fps, threshold = 16):
     out = cv2.VideoWriter(video_out, fourcc, fps, (int(cap.get(3)), int(cap.get(4))), isColor=False)
 
     # fgbg = cv2.createBackgroundSubtractorMOG2(varThreshold=threshold
-    fgbg = cv2.createBackgroundSubtractorMOG2(varThreshold=threshold)
+    fgbg = cv2.createBackgroundSubtractorMOG2(varThreshold=threshold, history=10)
 
     while (1):
         ret, frame = cap.read()
