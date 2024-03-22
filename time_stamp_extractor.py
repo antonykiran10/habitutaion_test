@@ -41,6 +41,7 @@ def extract_timestamp(dir_path, img_files, bit_table, sis_row_loc=3, tap_pixel_p
     tap_index = []
     cycles_list = []
 
+
     while idx < len(img_files):
         img_name = img_files[idx]
         try:
