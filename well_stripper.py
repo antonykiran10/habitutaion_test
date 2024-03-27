@@ -80,7 +80,7 @@ def stripper(input_path, output_path, n_col, n_row):
 
     # Divide the selected area into 3x3 squares and save them separately
     images = sorted(images, key=lambda x: int(re.search(r'\d+', x).group()))
-    tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
+    # tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
 
     count = 0
     for image in images:
@@ -100,7 +100,7 @@ def batch_stripper(input_path, output_path, n_col, n_row, x_start, y_start, x_en
 
     # Divide the selected area into 3x3 squares and save them separately
     images = sorted(images, key=lambda x: int(re.search(r'\d+', x).group()))
-    tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
+    # tools.write_list_to_file(images, os.path.abspath(os.path.join(input_path)) + os.path.basename(os.path.normpath(input_path)) + '_well_stripper_log.txt')
 
     count = 0
     for image in images:

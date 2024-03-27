@@ -4,6 +4,9 @@
 
 from ffmpy import FFmpeg
 import os
+import re
+import cv2
+import subprocess
 def mp4_to_bmp(path, filename):
     os.chdir(path)
     os.makedirs(path + filename[:-4], exist_ok=True)
@@ -12,44 +15,43 @@ def mp4_to_bmp(path, filename):
         inputs={str(filename): None},
         outputs={'./' + filename[:-4] + '/square_%d.bmp': '-pix_fmt rgb24'}
     )
+    # ff.cmd += ' > /dev/null 2>&1'  # Redirect stdout and stderr to /dev/null
+    ff.run(stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+def avi_to_bmp(path, filename):
+    os.chdir(path)
+    os.makedirs(os.path.join(path, filename[:-4]), exist_ok=True)
+
+    ff = FFmpeg(
+        inputs={str(filename): None},
+        outputs={'./' + filename[:-4] + '/square_%d.bmp': ['-c:v', 'xvid', '-q:v', '1']}
+    )
     print(ff.cmd)
     ff.run()
     print('Conversion complete...')
 
-def bmp_to_mp4(bmp_folder, output_path, output_filename, frame_rate):
+def sort_by_numbers(filename):
+    # Extract numbers from the filename
+    numbers = re.findall(r'\d+', filename)
+    # Convert the numbers to integers for proper numerical sorting
+    return int(numbers[0]) if numbers else float('inf')
 
-    # Ensure the output filename has the correct extension
-    if not output_filename.endswith('.mp4'):
-        output_filename += '.mp4'
+def bmp_to_mp4(bmp_dir, output_path, fps = 120):
+    # Get a list of all BMP files in the directory
+    bmp_files = sorted([f for f in os.listdir(bmp_dir) if f.endswith('.bmp')], key=sort_by_numbers)
 
-    # Get the list of BMP files in the folder and sort them
-    bmp_files = sorted([file for file in os.listdir(bmp_folder) if file.endswith('.BMP')])
+    # Load BMP files as clips
+    frames = [cv2.imread(os.path.join(bmp_dir, bmp)) for bmp in bmp_files]
 
-    # Prepare input list file for FFmpeg
-    input_list_file = os.path.join(output_path, 'input_list.txt')
-    with open(input_list_file, 'w') as f:
-        for bmp_file in bmp_files:
-            f.write("file '{}'\n".format(os.path.join(bmp_folder, bmp_file)))  # Write file paths to input_list.txt
+    # Define the frame size based on the first frame
+    height, width, _ = frames[0].shape
 
-    # Ensure the output directory exists
-    os.makedirs(output_path, exist_ok=True)
+    # Initialize video writer
+    out = cv2.VideoWriter(output_path, cv2.VideoWriter_fourcc(*'XVID'), fps, (width, height))
 
-    # Define output path
-    output_path = os.path.join(output_path, output_filename)
-    # Construct FFmpeg command
-    output_file_path = output_path # os.path.join(output_path, output_filename)
-    # ff = FFmpeg(
-    #     inputs={input_list_file: '-f concat -safe 0'},
-    #     outputs={output_file_path: '-c:v libx264 -pix_fmt rgb24 -r {} -framerate {} -fflags +genpts'.format(frame_rate, frame_rate)}
-    # )
-    frame_rate = 120
-    ff = FFmpeg(
-        inputs={'input_list.txt': None},
-        outputs={'output.mp4': '-c:v libx264 -crf 18 -pix_fmt rgb24 -r {} -vf "fps={}"'.format(frame_rate, frame_rate)}
-    )
+    # Write frames to video
+    for frame in frames:
+        out.write(frame)
 
-    # Print FFmpeg command
-    print(ff.cmd)
-
-    # Execute FFmpeg command
-    ff.run()
+    # Release the video writer
+    out.release()

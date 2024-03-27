@@ -110,11 +110,12 @@ def fish_hunter(radius, theta, input_path, head_x, head_y, centroid_x, centroid_
 
 def hunter(radius, theta, input_path, p1_x, p1_y, p2_x, p2_y):
     image_skeleton = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+    height, width = image_skeleton.shape[:2]
     if p1_x != 'no_fish' and p2_x != 'no_fish':
         d = np.sqrt((p2_x - p1_x) ** 2 + (p2_y - p1_y) ** 2)
         if d == 0:
-            print('zero encountered*******************************************************************************')
-            input("Press Enter to continue...")
+            print('Warning: Centroid and Head are same point. *******************************************************************************')
+            # input("Press Enter to continue...")
 
     if p1_x != 'no_fish' and p2_x != 'no_fish' and d > 0:
         # d = np.sqrt((p2_x - p1_x) ** 2 + (p2_y - p1_y) ** 2)
@@ -132,12 +133,14 @@ def hunter(radius, theta, input_path, p1_x, p1_y, p2_x, p2_y):
                 # if np.isnan(np.deg2rad(j)) or np.isnan(y):
                 #     print(np.deg2rad(j))
                 # print('Just before pixel')
-                pixel = image_skeleton[int(y), int(x)]
-                # print(pixel)
-                # print('Reached')
-                if pixel > 0:
-                    point_x, point_y = x, y
-                    break
+                pixel = 0
+                if 0 < x <= width and 0 < y <= height:
+                    pixel = image_skeleton[int(y), int(x)]
+                    # print(pixel)
+                    # print('Reached')
+                    if pixel > 0:
+                        point_x, point_y = x, y
+                        break
             if pixel > 0:
                 break
         return point_x, point_y
