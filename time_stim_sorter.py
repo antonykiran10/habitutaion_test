@@ -139,9 +139,9 @@ def stim_sorter(parent_folder, image_folder, sis_row_loc = 3, tap_pixel_pos = 32
     flag = 0
     i=0
     while i < len(sorted_filenames):
-        if stim_index[i] == 1:
+        if i < len(sorted_filenames) and stim_index[i] == 1:
             flag += 1
-        while stim_index[i] == 1:
+        while i < len(sorted_filenames) and stim_index[i] == 1:
             mover_index[i] = flag
             i += 1
         i += 1

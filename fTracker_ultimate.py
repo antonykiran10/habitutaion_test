@@ -131,6 +131,7 @@ def lessgoo(video_folder, video_name, parent_folder):
             cv2.imwrite(tracked_fish_image, marked_image)
     # print(df)
     df.to_csv(video_folder + video_name[:-4] + '.csv', index=False)
+    cv2.destroyAllWindows()
     # print(flag)
     # print("Images processed and saved in the output folder.")
 

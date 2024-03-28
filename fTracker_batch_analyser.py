@@ -1,13 +1,67 @@
+# Copyright (c) 2024 Antony Kiran K David
 import pandas as pd
-from scipy.signal import find_peaks
+import time
+import os
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy.signal import find_peaks
 
-# video_name = '120fps_stim_data.csv'
+
+# Initialize start time
+start_time = time.time()
+
 parent_folder = "/home/antony/projects/roopsali/Habituation/code_tester/"
+
 ncol = 5
 nrow = 4
 number_of_stimulus = 17
+number_of_fish = ncol * nrow
+number_of_points = 25 # change also in fTracker_ultimate.py
+
+# serial looper to fill up missing centroid
+for i in range(0, number_of_stimulus):
+    video_folder = parent_folder + str(i + 1) + '_wells/'
+    for j in range(0, nrow):
+        for k in range(0,ncol):
+            # video_folder = parent_folder + str(i+1) + '_wells/'
+            file_name = str(j) + '_' + str(k) + '.csv'
+            data_file = pd.read_csv(video_folder + file_name)
+            num_of_cols_infile = data_file.shape[1]
+            for l in range(0, len(data_file['Centroid_status'])):
+                # if l <2:
+                #     data_file['Centroid_status'][l] == 'no_fish'
+                if data_file['Centroid_status'][l] == 'no_fish' and l > 0:
+                    # print(data_file['Centroid_status'][l])
+                    data_file['Centroid_status'][l] = 0
+                    data_file['Centroid_x'][l] = data_file['Centroid_x'][l-1]
+                    data_file['Centroid_y'][l] = data_file['Centroid_y'][l - 1]
+                    data_file['Head_x'][l] = data_file['Head_x'][l - 1]
+                    data_file['Head_y'][l] = data_file['Head_y'][l - 1]
+            data_file.to_csv(video_folder + 'processed_' + file_name, index=False)
+        # print('Processed: ' + video_folder + file_name)
+
+fishwise_path = parent_folder + '/fishwiseData'
+os.makedirs(fishwise_path, exist_ok=True)
+
+
+for j in range(0, nrow):
+    for k in range(0, ncol):
+        fish_data = pd.DataFrame()
+        for i in range(0, number_of_stimulus):
+            video_folder = parent_folder + str(i+1) + '_wells/'
+            file_name = 'processed_' + str(j) + '_' + str(k) + '.csv'
+            dataFile = pd.read_csv(video_folder + file_name)
+            # print(dataFile)
+            # print(well_dataFile.shape[1])
+            # temp_fish_master = pd.DataFrame(columns=columns)
+            stim_identity = np.full(len(dataFile['Centroid_status']), i+1)
+            stim_identity_column = pd.Series(stim_identity, name='Stim_number')
+            temp_fish = pd.concat([stim_identity_column.to_frame(), dataFile], axis=1)
+            # print(temp_fish)
+            fish_data = pd.concat([fish_data, temp_fish], ignore_index=True)
+            # data_file.to_csv(video_folder + 'processed_' + file_name, index=False)
+            # print('Processed: ' + video_folder + file_name)
+        fish_data.to_csv(fishwise_path + '/fish_' + file_name )
+
 
 peaks_number_master = pd.DataFrame()
 peaks_stat_master = pd.DataFrame()
@@ -92,4 +146,13 @@ for i in range(0, nrow):
         file = pd.read_csv(parent_folder + 'fishwiseData/fish_processed_' + str(i) + '_' + str(j) + '.csv')
         grouped = file.groupby(file['Stim_number'])
 
+# print(fish_data)
+# Initialize end time
+end_time = time.time()
 
+# Calculate total time taken
+total_time_seconds = end_time - start_time
+total_time_minutes = total_time_seconds / 60
+
+# Print total time taken in minutes
+print("Total time taken:", total_time_minutes, "minutes")

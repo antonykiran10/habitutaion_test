@@ -31,7 +31,7 @@ def find_centroid(input_path, cutoff):
                 # elif brightness > threshold_brightness:
                 #     threshold_brightness = brightness
                 #     bright_spots = [(x, y)]
-
+    cv2.destroyAllWindows()
     # Calculate the average position of the brightest spots
     if bright_spots:
         avg_x = sum(x for x, _ in bright_spots) / len(bright_spots)
