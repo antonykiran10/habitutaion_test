@@ -9,11 +9,11 @@ from scipy.signal import find_peaks
 # Initialize start time
 start_time = time.time()
 
-parent_folder = "/home/antony/projects/roopsali/Habituation/code_tester/"
+parent_folder = "/home/antony/projects/kiran_habituation/tab5_5dpf_03-04-2024/trial_5/"
 
 ncol = 5
 nrow = 4
-number_of_stimulus = 17
+number_of_stimulus = 87 # put 1 number less
 number_of_fish = ncol * nrow
 number_of_points = 25 # change also in fTracker_ultimate.py
 
@@ -68,9 +68,15 @@ peaks_stat_master = pd.DataFrame()
 latency_master = pd.DataFrame()
 duration_master = pd.DataFrame()
 
+# i = 0
+# j = 0
+# k = 0
+
 for i in range(0, nrow):
     for j in range(0, ncol):
+        # print(i,j)
         file = pd.read_csv(parent_folder + 'fishwiseData/fish_processed_' + str(i) + '_' + str(j) + '.csv')
+        # print(file)
         grouped = file.groupby(file['Stim_number'])
         num_of_peaks = []
         peak_locations = []
@@ -85,7 +91,7 @@ for i in range(0, nrow):
             temp = grouped.get_group(k)['Centroid_status']
             # Calculate the width of each peak
             peak_widths = np.zeros_like(peaks, dtype=float)
-            for i, peak in enumerate(peaks):
+            for l, peak in enumerate(peaks):
                 # Find the left and right boundaries of the peak
                 left_boundary = peak
                 right_boundary = peak + 1
@@ -94,7 +100,7 @@ for i in range(0, nrow):
                 while file['Centroid_status'][right_boundary] == 1 and right_boundary < len(file) - 1:
                     right_boundary += 1
                 # Calculate the width of the peak
-                peak_widths[i] = right_boundary - left_boundary
+                peak_widths[l] = right_boundary - left_boundary
             # Calculate the sum of widths of peaks
             sum_peak_widths = np.sum(peak_widths)
             temp_total_time = (sum_peak_widths/120) * 1000 # milli seconds

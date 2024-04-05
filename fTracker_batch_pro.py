@@ -8,14 +8,14 @@ import os
 # Initialize start time
 start_time = time.time()
 
-parent_folder = "/home/antony/projects/habituation_saunri/test 001_27-02-2024/code_tester/"
+parent_folder = "/home/antony/projects/kiran_habituation/tab5_5dpf_03-04-2024/trial_5/"
 
 ncol = 5
 nrow = 4
-number_of_stimulus = 38
+number_of_stimulus = 87
 max_jobs = 16
 number_of_fish = ncol * nrow
-number_of_points = 25 # change also in fTracker_ultimate.py
+number_of_points = 10 # change also in fTracker_ultimate.py
 
 def process_video(i, j, k, parent_folder):
     # print('Processing ' + str(i+1) + '_wells/' + str(j) + '_' + str(k) + '.avi' + '...')
@@ -32,13 +32,13 @@ def process_stimulus(i):
 Parallel(n_jobs=max_jobs)(delayed(process_stimulus)(i) for i in range(number_of_stimulus))
 
 
-# serial looper
+# # serial looper
 # for i in range(0, number_of_stimulus):
 #     for j in range(0, nrow):
 #         for k in range(0,ncol):
 #             video_folder = parent_folder + str(i+1) + '_wells/'
 #             video_name = str(j) + '_' + str(k) + '.avi'
-#             fTracker_ultimate.lessgoo(video_folder, video_name)
+#             fTracker_ultimate.lessgoo(video_folder, video_name, parent_folder)
 #             print('Processed: ' + video_folder + video_name)
 
 # serial looper to fill up missing centroid

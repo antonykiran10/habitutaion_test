@@ -30,7 +30,7 @@ def lessgoo(video_folder, video_name, parent_folder):
     threshold = 25 #Threshold for the MOG2 algorithm
     fps = 120
     head_radius = 12
-    number_of_points = 25
+    number_of_points = 10
     hunter_radius = 7
     sweep_angle = 60 #sweeps this angle on either side. ie. total sweep is 2x
 
@@ -76,7 +76,7 @@ def lessgoo(video_folder, video_name, parent_folder):
 
             # Find the head point
             if centroid_y != 'no_fish':
-                head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, image_original)
+                head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, original_image)
             else:
                 head_x, head_y = 'no_fish', 'no_fish'
 

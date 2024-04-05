@@ -19,18 +19,19 @@ def find_centroid(input_path, cutoff):
     if cv2.integral(image)[-1, -1] > cutoff:
         for x in range(0, width):
             for y in range(0, height):
-                # Calculate brightness for the current pixel
-                pixel_value = image[y, x]
-                # brightness = calculate_brightness(pixel)
-                brightness = pixel_value
+                if 0 < x <= width and 0 < y <= height:
+                    # Calculate brightness for the current pixel
+                    pixel_value = image[y, x]
+                    # brightness = calculate_brightness(pixel)
+                    brightness = pixel_value
 
-                # If the current pixel is as bright as the brightest one so far, add it to the list
-                if brightness >= threshold_brightness:
-                    bright_spots.append((x, y))
-                # If the current pixel is brighter than the previous brightest one, update the list
-                # elif brightness > threshold_brightness:
-                #     threshold_brightness = brightness
-                #     bright_spots = [(x, y)]
+                    # If the current pixel is as bright as the brightest one so far, add it to the list
+                    if brightness >= threshold_brightness:
+                        bright_spots.append((x, y))
+                    # If the current pixel is brighter than the previous brightest one, update the list
+                    # elif brightness > threshold_brightness:
+                    #     threshold_brightness = brightness
+                    #     bright_spots = [(x, y)]
     cv2.destroyAllWindows()
     # Calculate the average position of the brightest spots
     if bright_spots:
@@ -42,34 +43,42 @@ def find_centroid(input_path, cutoff):
     return avg_position[0], avg_position[1]
 
 
-def head_finder(cx, cy, radius, image):
-    image = Image.fromarray(image)
-    image = ImageOps.invert(image)
+def head_finder(cx, cy, radius, input_path):
+    image = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+    # image = Image.fromarray(image)
+    image = cv2.bitwise_not(image)
     # height, width = image.shape[:2]
     # Initialize variables to keep track of the brightest spots
     brightest_brightness = 0
     brightest_spots_x = []
     brightest_spots_y = []
-
+    height, width = image.shape[:2]
     # compute head cordinate only if there is fish
     if cx != 'no_fish':
         # find the maximum intensity in that area
         for x in range(cx - radius, cx + radius):
             for y in range(cy - radius, cy + radius):
-                pixel = image.getpixel((x, y))
-                # brightness = calculate_brightness(pixel)
-                brightness = pixel
-                if brightness > brightest_brightness and cx != x and cy != y:
-                    brightest_brightness = brightness
+                if 0 <= x < width and 0 <= y < height:
+                    # print(str(height) + ',' + str(width))
+                    pixel = image[y, x]
+                    # brightness = calculate_brightness(pixel)
+                    brightness = pixel
+                    if brightness > brightest_brightness and cx != x and cy != y:
+                        brightest_brightness = brightness
+                # else:
+                #     print('Out of bounds...............................................................')
         # find the points with maximum intensity
         for x in range(cx - radius, cx + radius):
             for y in range(cy - radius, cy + radius):
-                pixel = image.getpixel((x, y))
-                # brightness = calculate_brightness(pixel)
-                brightness = pixel
-                if brightness == brightest_brightness:
-                    brightest_spots_x.append(x)
-                    brightest_spots_y.append(y)
+                # if 0 < x <= width and 0 < y <= height:
+                if 0 <= x < width and 0 <= y < height:
+                    # print(str(height) + ',' + str(width))
+                    pixel = image[y, x]
+                    # brightness = calculate_brightness(pixel)
+                    brightness = pixel
+                    if brightness == brightest_brightness:
+                        brightest_spots_x.append(x)
+                        brightest_spots_y.append(y)
         # find the head position from the average of the maximum intensity pixels
         if brightest_spots_x:
             # headx = sum(x for x in brightest_spots_x) / len(brightest_spots_x)
