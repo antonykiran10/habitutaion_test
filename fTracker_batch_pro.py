@@ -8,11 +8,11 @@ import os
 # Initialize start time
 start_time = time.time()
 
-parent_folder = "/home/antony/projects/kiran_habituation/tab5_5dpf_03-04-2024/trial_5/"
+parent_folder = "/home/antony/projects/kiran_habituation/tab5_5dpf_03-04-2024/trial_4/"
 
 ncol = 5
 nrow = 4
-number_of_stimulus = 87
+number_of_stimulus = 70
 max_jobs = 16
 number_of_fish = ncol * nrow
 number_of_points = 10 # change also in fTracker_ultimate.py
