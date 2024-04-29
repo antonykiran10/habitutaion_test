@@ -114,12 +114,12 @@ if __name__ == "__main__":
 
 # Change these
 # ----------------------------------------------
-    input_image_path = "/home/antony/projects/roopsali/Habituation/120fps/"  # Replace with the path to your input folder
-    input_image = input_image_path + "control00000.BMP" # This is your first image, it us used for marking the area of intrest.
+    input_image_path = "/home/antony/projects/kiran_habituation/back_sub/back_sub_trial_2/"  # Replace with the path to your input folder
+    input_image = input_image_path + "control000000000.bmp" # This is your first image, it us used for marking the area of intrest.
     # Replace with the path to your output folder
     # os.chdir('/home/antony/projects/kiran led test/')
     # # os.mkdir('wells')
-    output_folder = "/home/antony/projects/roopsali/Habituation/120fps well/" # Path to your output folder
+    output_folder = "/home/antony/projects/kiran_habituation/back_sub/wells" # Path to your output folder
 # --------------------------------------------------
 
     # Mark the area of interest interactively

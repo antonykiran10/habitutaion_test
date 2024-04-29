@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
-import fTracker_functions as ft
+import fTracker_functions_test as ft
 import tools
 import fish_picker
 import converter
@@ -19,6 +19,15 @@ def add_row(data_list, columns):
 video_folder = '/home/antony/projects/roopsali/Habituation/code_tester/1_wells/'
 video_name = '0_1.avi'
 
+# Function to read images from the folder
+def read_images_from_folder(folder):
+    images = []
+    for filename in os.listdir(folder):
+        img_path = os.path.join(folder, filename)
+        img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
+        if img is not None:
+            images.append(img)
+    return images
 
 def lessgoo(video_folder, video_name, parent_folder):
 
@@ -29,7 +38,7 @@ def lessgoo(video_folder, video_name, parent_folder):
 
     threshold = 100 #Threshold for the MOG2 algorithm
     fps = 120
-    head_radius = 12
+    head_radius = 9
     number_of_points = 10
     hunter_radius = 7
     sweep_angle = 60 #sweeps this angle on either side. ie. total sweep is 2x
@@ -40,16 +49,24 @@ def lessgoo(video_folder, video_name, parent_folder):
     series = os.listdir(video_folder + 'motion_selected_' + video_name[:-4])
     series = sorted(series, key=tools.extract_number)
     flag = 0
+    image_stack = read_images_from_folder(input_video_link[:-4])
+    # Compute the maximum intensity projection
+    max_intensity_projection = np.max(np.array(image_stack), axis=0)
+
+    # cv2.imshow("MIP", max_intensity_projection)
+    # cv2.waitKey(0)
 
     background_sub_img_path = video_folder + 'motion_selected_' + video_name[:-4]
     original_img_path = video_folder + video_name[:-4]
     fish_skeleton_path = video_folder + 'skeletonised_' + video_name[:-4]
     extra_image_path = video_folder + 'extra_' + video_name[:-4]
     tracked_fish_skeleton_path = video_folder + 'tracked_skeleton_' + video_name[:-4]
+    convolved_image_path = video_folder + 'convolved_skeleton_' + video_name[:-4]
 
     os.makedirs(fish_skeleton_path,exist_ok=True)
     os.makedirs(extra_image_path,exist_ok=True) # This is an extra folder incase we need it for testing somthing or needs special kinds of output
     os.makedirs(tracked_fish_skeleton_path,exist_ok=True)
+    os.makedirs(convolved_image_path, exist_ok=True)
 
     # global cloumns
     columns = ['Frame', 'Centroid_status', 'Centroid_x', 'Centroid_y', 'Head_x', 'Head_y'] + [f'P{i}_{c}' for i in range(1, number_of_points) for c in ['x', 'y']]
@@ -67,30 +84,74 @@ def lessgoo(video_folder, video_name, parent_folder):
             skeleton_image = os.path.join(fish_skeleton_path, filename)
             extra_image = os.path.join(extra_image_path, filename)
             tracked_fish_image = os.path.join(tracked_fish_skeleton_path, filename)
+            convolved_image = os.path.join(convolved_image_path, filename)
 
             image_original = cv2.imread(original_image, cv2.IMREAD_GRAYSCALE)
             image_subtracted = cv2.imread(background_sub_image, cv2.IMREAD_GRAYSCALE)
+            image_diff_mip = cv2.absdiff(max_intensity_projection, image_original)
+
+            disk_kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+            image_convolved = cv2.filter2D(image_diff_mip, -1, disk_kernel)
+            cv2.imwrite(convolved_image, image_convolved)
+            cv2.imwrite(extra_image, image_diff_mip)
+
+            #
+            # cv2.imshow("Difference", image_diff_mip)
+            # cv2.waitKey(0)
+            # Determine the MIP along the desired axis (for example, Z-axis)
+            # mip_original = np.max(image, axis=2)
 
             # centroid_corr_radius = 10
-            centroid_x, centroid_y = ft.find_centroid(background_sub_image, cutoff=5000)  # find centroid
+            cv2.imwrite(extra_image, image_diff_mip)
+            image_extra = cv2.imread(extra_image, cv2.IMREAD_GRAYSCALE)
+            if cv2.integral(image_subtracted)[-1, -1] > 1000:
+                # Threshold the convolved image to create a binary image
+                _, binary_image_conv = cv2.threshold(image_convolved, 200, 255, cv2.THRESH_BINARY)
+
+                # # Display the binary image
+                # cv2.imshow('Binary Image', binary_image_conv)
+                # cv2.waitKey(0)
+
+                # Find contours in the binary image
+                contours, _ = cv2.findContours(binary_image_conv, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+                # Find the centroid of the largest contour (assuming the head is the largest connected component)
+                if contours:
+                    largest_contour = max(contours, key=cv2.contourArea)
+                    M = cv2.moments(largest_contour)
+                    centroid_x = int(M["m10"] / M["m00"])
+                    centroid_y = int(M["m01"] / M["m00"])
+                    centroid = (centroid_x, centroid_y)
+                else:
+                    centroid_x, centroid_y = 'no_fish', 'no_fish'
+            else:
+                centroid_x, centroid_y = 'no_fish', 'no_fish'
+
+            # if cv2.integral(image_subtracted)[-1, -1] > 1000:
+            #     centroid_x, centroid_y = ft.find_centroid(background_sub_image, cutoff=1000)  # find centroid
+            # else:
+            #     centroid_x, centroid_y = 'no_fish', 'no_fish'
 
             # Find the head point
+
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(image_convolved)
             if centroid_y != 'no_fish':
-                head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, original_image)
+                # head_x, head_y = max_loc
+                head_x, head_y = ft.head_finder(int(centroid_x), int(centroid_y), head_radius, convolved_image)
             else:
                 head_x, head_y = 'no_fish', 'no_fish'
 
             # Image operations
             # ----------------------------------------------------------------
-            _, binary_image = cv2.threshold(image_subtracted, 50, 255, cv2.THRESH_BINARY)
-            cv2.imwrite(extra_image, binary_image)
+            _, binary_image = cv2.threshold(image_convolved, 100, 255, cv2.THRESH_BINARY)
+
 
             # print(thresh)
 
             # cv2.imwrite(output_path3, binary_image)
 
             # Define a kernel (structuring element) for morphological operations
-            kernel_size = 20
+            kernel_size = 1
             kernel = np.ones((kernel_size, kernel_size), np.uint8)
 
             # Perform morphological closing

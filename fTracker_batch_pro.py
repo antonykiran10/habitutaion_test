@@ -1,5 +1,5 @@
 # Copyright (c) 2024 Antony Kiran K David
-import fTracker_ultimate
+import fTracker_ultimate as tracker
 from joblib import Parallel, delayed
 import time
 import pandas as pd
@@ -8,12 +8,12 @@ import os
 # Initialize start time
 start_time = time.time()
 
-parent_folder = "/home/antony/projects/kiran_habituation/tab5_5dpf_03-04-2024/trial_4/"
+parent_folder = "/home/antony/projects/kiran_habituation/28-04-2024/bod1_homo_01/trial_4/"
 
 ncol = 5
 nrow = 4
-number_of_stimulus = 70
-max_jobs = 16
+number_of_stimulus = 59
+max_jobs = 15
 number_of_fish = ncol * nrow
 number_of_points = 10 # change also in fTracker_ultimate.py
 
@@ -21,7 +21,7 @@ def process_video(i, j, k, parent_folder):
     # print('Processing ' + str(i+1) + '_wells/' + str(j) + '_' + str(k) + '.avi' + '...')
     video_folder = parent_folder + str(i+1) + '_wells/'
     video_name = str(j) + '_' + str(k) + '.avi'
-    fTracker_ultimate.lessgoo(video_folder, video_name, parent_folder)
+    tracker.lessgoo(video_folder, video_name, parent_folder)
     print('Processed: ' + str(i+1) + '_wells/' + str(j) + '_' + str(k) + '.avi')
 
 # Define the function to be parallelized
