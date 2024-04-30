@@ -173,7 +173,7 @@ def stim_sorter(parent_folder, image_folder, sis_row_loc = 3, tap_pixel_pos = 32
     return flag
 
 
-def tap_sorter(parent_folder, image_folder, sis_row_loc = 4, tap_pixel_pos = 32):
+def tap_sorter(parent_folder, image_folder, sis_row_loc = 3, tap_pixel_pos = 32):
     bit_table = generate_bitTable()
     image_directory = parent_folder + image_folder + '/'
     series = os.listdir(image_directory)
@@ -187,12 +187,11 @@ def tap_sorter(parent_folder, image_folder, sis_row_loc = 4, tap_pixel_pos = 32)
     mover_index = np.zeros(len(sorted_filenames))
     flag = 0
     i=0
-    while i < len(sorted_filenames) and i+640 < len(sorted_filenames):
-        print(i)
-        if stim_index[i] == 1:
+    while i < len(sorted_filenames) and i+100 < len(sorted_filenames):
+        if (i < len(sorted_filenames) and stim_index[i] == 1 ):
             flag += 1
-        for j in range(0, 640):
-            mover_index[j] = flag
+        while i < len(sorted_filenames) and stim_index[i] == 1:
+            mover_index[i-2: i+640] = flag
             i += 1
         i += 1
 

@@ -23,10 +23,10 @@ def create_parent_folders(directory):
         shutil.move(folder_path, parent_path)
 
 # Directory to work with
-master_directory_path = "/home/antony/projects/saunri_patatap/27-04-2024/tester/"
+master_directory_path = "/home/antony/projects/saunri_patatap/27-04-2024/"
 
 # Call the function to create parent folders and move directories
-create_parent_folders(master_directory_path)
+# create_parent_folders(master_directory_path)
 
 folders = [f for f in os.listdir(master_directory_path) if os.path.isdir(os.path.join(master_directory_path, f))]
 
