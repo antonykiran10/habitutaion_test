@@ -187,11 +187,11 @@ def tap_sorter(parent_folder, image_folder, sis_row_loc = 3, tap_pixel_pos = 32)
     mover_index = np.zeros(len(sorted_filenames))
     flag = 0
     i=0
-    while i < len(sorted_filenames) and i+100 < len(sorted_filenames):
+    while i < len(sorted_filenames) and i+700 < len(sorted_filenames):
         if (i < len(sorted_filenames) and stim_index[i] == 1 ):
             flag += 1
         while i < len(sorted_filenames) and stim_index[i] == 1:
-            mover_index[i-2: i+640] = flag
+            mover_index[i-10: i+640] = flag
             i += 1
         i += 1
 

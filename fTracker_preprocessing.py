@@ -6,8 +6,8 @@ import well_stripper
 import time_stim_sorter
 import converter
 
-parent_folder = "/home/antony/projects/kiran_habituation/28-04-2024/bod1_homo_01/trial_4/"   # Replace with the path to your input folder
-image_folder = 'trial_04'
+parent_folder = "/home/antony/projects/kiran_habituation/28-04-2024/bod1_homo_01/trial_5/"   # Replace with the path to your input folder
+image_folder = 'trial_05'
 number_of_stimulus = time_stim_sorter.stim_sorter(parent_folder, image_folder)
 print(number_of_stimulus)
 

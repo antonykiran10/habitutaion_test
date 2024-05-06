@@ -38,7 +38,8 @@ def sort_by_numbers(filename):
 
 def bmp_to_mp4(bmp_dir, output_path, fps = 120):
     # Get a list of all BMP files in the directory
-    bmp_files = sorted([f for f in os.listdir(bmp_dir) if f.endswith('.bmp')], key=sort_by_numbers)
+    bmp_files = sorted([f for f in os.listdir(bmp_dir) if f.lower().endswith('.bmp')], key=sort_by_numbers)
+    print(bmp_files)
 
     # Load BMP files as clips
     frames = [cv2.imread(os.path.join(bmp_dir, bmp)) for bmp in bmp_files]

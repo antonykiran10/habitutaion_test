@@ -3,6 +3,7 @@
 import os
 import time_stim_sorter
 import shutil
+import converter
 
 
 
@@ -26,18 +27,25 @@ def create_parent_folders(directory):
 master_directory_path = "/home/antony/projects/saunri_patatap/27-04-2024/"
 
 # Call the function to create parent folders and move directories
-# create_parent_folders(master_directory_path)
+create_parent_folders(master_directory_path)
 
 folders = [f for f in os.listdir(master_directory_path) if os.path.isdir(os.path.join(master_directory_path, f))]
 
 for i in range(len(folders)):
-    print(folders)
+    # print(folders)
     parent_folder = master_directory_path + folders[i] + '/' # Replace with the path to your input folder
     image_folder = str(folders[i][:-7])
-    print(parent_folder)
+    # print(parent_folder)
     print(image_folder)
     number_of_stimulus = time_stim_sorter.tap_sorter(parent_folder, image_folder)
     print(number_of_stimulus)
+    for k in range(0, number_of_stimulus):
+        input_path = master_directory_path + str(folders[i]) + '/' + str(k+1)
+        # print(input_path)
+        output_file = master_directory_path + str(folders[i]) + '/' + str(k+1) + '.avi'
+        # print(output_file)
+        converter.bmp_to_mp4(input_path, output_file, fps=640)
+
 
 
 

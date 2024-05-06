@@ -16,3 +16,6 @@ def add_row(data_list, columns):
 # To extract number from file names of images in the folder for individual wells
 def extract_number(square):
     return int(square.split('_')[1].split('.')[0])
+
+def extract_number_org(square):
+    return int(square.split('l')[1].split('.')[0])
